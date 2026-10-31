@@ -1,0 +1,23 @@
+name: mirror-fischer-data
+on:
+  workflow_dispatch:
+  push:
+    paths: [".github/workflows/mirror.yml", "tools/mirror.py"]
+permissions:
+  contents: write
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo mkdir -p /mnt/work && sudo chown $USER /mnt/work
+          df -h / /mnt
+      - name: Mirror
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORK: /mnt/work
+        run: python3 -u tools/mirror.py
