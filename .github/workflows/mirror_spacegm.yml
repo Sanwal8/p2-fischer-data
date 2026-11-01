@@ -1,0 +1,20 @@
+name: mirror-spacegm-codex
+on:
+  workflow_dispatch:
+  push:
+    paths: [".github/workflows/mirror_spacegm.yml", "tools/mirror_zenodo.py"]
+permissions:
+  contents: write
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mirror
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORK: /tmp/work
+          ZENODO_RECORD: "13179600"
+          RELEASE_TAG: spacegm-codex-v1
+        run: python3 -u tools/mirror_zenodo.py
